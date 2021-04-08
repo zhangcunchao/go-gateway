@@ -63,7 +63,7 @@ func entrance(c *gin.Context) {
 	if val, ok := proxyMap[name]; ok {
 		//路由是否存在
 		//fmt.Println(val)
-		debugPrint("后端接口%s存在%s", name)
+		debugPrint("后端接口%s存在%s", name, val)
 	} else {
 		// fmt.Println(ok)
 		// fmt.Printf("%s不存在\n", name)
