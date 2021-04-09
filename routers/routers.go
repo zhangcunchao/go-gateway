@@ -16,8 +16,12 @@ func InitRouter(Cfg *goconfig.ConfigFile) *gin.Engine {
 	if conEntrance != "" {
 		r.StaticFS("/"+conEntrance, http.Dir("./page"))
 
-		//userInfo
-		r.POST("/"+conEntrance+"/*action", admin.UserInfo)
+		r.POST("/"+conEntrance+"/login", admin.Login)
+		r.Use(admin.AuthMiddleWare())
+		{
+			//userInfo
+			r.POST("/"+conEntrance+"/userinfo", admin.UserInfo)
+		}
 	}
 
 	return r

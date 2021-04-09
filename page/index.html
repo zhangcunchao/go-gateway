@@ -25,6 +25,7 @@
                     <a href="javascript:;">{{ userName }}</a>
                     <dl class="layui-nav-child">
                         <dd><a href="login.html">退出</a></dd>
+                        <dd><a href="login.html">退出</a></dd>
                     </dl>
                 </li>
             </ul>
@@ -122,6 +123,9 @@
                                 message: response.data.msg,
                                 type: 'error',
                                 duration:5000});
+                            if(10002 == response.data.code){
+                                window.location.href="login.html"
+                            }
                         }
                     }).catch((res)=>{
                         console.log(res)

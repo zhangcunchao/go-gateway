@@ -10,24 +10,61 @@
     <title>管理后台</title>
 </head>
 <body class="login-wrap">
-    <div class="login-container">
+    <div id="appvue" class="login-container">
         <form class="login-form">
             <div class="input-group">
-                <input type="text" id="username" class="input-field">
+                <input type="text" id="username" v-model="loginInfo.username" class="input-field">
                 <label for="username" class="input-label">
                     <span class="label-title">用户名</span>
                 </label>
             </div>
             <div class="input-group">
-                <input type="password" id="password" class="input-field">
+                <input type="password" v-model="loginInfo.password" id="password" class="input-field">
                 <label for="password" class="input-label">
                     <span class="label-title">密码</span>
                 </label>
             </div>
-            <button type="button" class="login-button">登录<i class="ai ai-enter"></i></button>
+            <button type="button" @click="login()" class="login-button">登录<i class="ai ai-enter"></i></button>
         </form>
     </div>
 </body>
 <script src="assets/layui.js"></script>
 <script src="index.js" data-main="login"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var app = new Vue({
+        el: '#appvue',
+        data: {
+            loginInfo:{
+                username:"",
+                password:""
+            }
+        },
+        mounted:function(){
+        },
+        created:function(){
+        },
+        methods: {
+            login:function () {
+                axios.post('login', this.loginInfo)
+                .then((response)=>{
+                    if (response.data.code == 10000) {
+                        window.location.href="index.html"
+                    } else {
+                        this.$message({
+                            showClose: true,
+                            message: response.data.msg,
+                            type: 'error',
+                            duration:5000});
+                    }
+                }).catch((res)=>{
+                    console.log(res)
+                });
+            },
+            
+        }
+    })
+</script>
 </html>
