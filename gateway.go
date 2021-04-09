@@ -51,7 +51,7 @@ func init() {
 	DebugModel := Cfg.MustValue("http", "DebugModel", "debug")
 	gin.SetMode(DebugModel)
 
-	//初始化路由集合 todo
+	//初始化路由集合 todo 判断设置了api才启用
 	proxyMap["/abc"] = Proxy{Remark: "Remark", Prefix: "ab"}
 
 }
@@ -87,6 +87,12 @@ func main() {
 	gwEntrance := Cfg.MustValue("http", "GwEntrance", "api")
 	r.Any("/"+gwEntrance+"/*action", entrance)
 	debugPrint("gateway entrance %s", gwEntrance)
+
+	//管理后台入口
+	conEntrance := Cfg.MustValue("http", "ConEntrance", "")
+	if conEntrance != "" {
+		r.StaticFS("/"+conEntrance, http.Dir("./goadmin"))
+	}
 
 	// 1.json
 	// r.GET("/someJSON", func(c *gin.Context) {
