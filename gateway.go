@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 
+	"go-gateway/debug"
 	"go-gateway/routers"
 
 	"github.com/Unknwon/goconfig"
@@ -47,7 +48,7 @@ func init() {
 		numCPU = runtime.NumCPU()
 	}
 	runtime.GOMAXPROCS(numCPU)
-	debugPrint("run cpuNum %d", numCPU)
+	debug.DebugPrint("run cpuNum %d", numCPU)
 
 	//gin运行模式
 	DebugModel := Cfg.MustValue("http", "DebugModel", "debug")
@@ -65,11 +66,11 @@ func entrance(c *gin.Context) {
 	if val, ok := proxyMap[name]; ok {
 		//路由是否存在
 		//fmt.Println(val)
-		debugPrint("后端接口%s存在%s", name, val)
+		debug.DebugPrint("后端接口%s存在%s", name, val)
 	} else {
 		// fmt.Println(ok)
 		// fmt.Printf("%s不存在\n", name)
-		debugPrint("后端接口%s不存在\n", name)
+		debug.DebugPrint("后端接口%s不存在\n", name)
 	}
 	c.String(http.StatusOK, "hello World! %s", name)
 }
@@ -88,7 +89,7 @@ func main() {
 
 	gwEntrance := Cfg.MustValue("http", "GwEntrance", "api")
 	r.Any("/"+gwEntrance+"/*action", entrance)
-	debugPrint("gateway entrance %s", gwEntrance)
+	debug.DebugPrint("gateway entrance %s", gwEntrance)
 
 	// 1.json
 	// r.GET("/someJSON", func(c *gin.Context) {

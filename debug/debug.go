@@ -1,4 +1,4 @@
-package main
+package debug
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func debugPrint(format string, values ...interface{}) {
+func DebugPrint(format string, values ...interface{}) {
 	if gin.IsDebugging() {
 		if !strings.HasSuffix(format, "\n") {
 			format += "\n"
