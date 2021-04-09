@@ -6,6 +6,8 @@ import (
 	"os"
 	"runtime"
 
+	"go-gateway/routers"
+
 	"github.com/Unknwon/goconfig"
 	"github.com/gin-gonic/gin"
 )
@@ -77,7 +79,7 @@ func main() {
 	//todo 分布式，控制台分离,统一返回（可配置，返回json,xml,html）
 
 	// 1.创建路由
-	r := gin.Default()
+	r := routers.InitRouter(Cfg)
 	// 2.绑定路由规则，执行的函数
 	// gin.Context，封装了request和response
 	// r.Any("/", func(c *gin.Context) {
@@ -87,12 +89,6 @@ func main() {
 	gwEntrance := Cfg.MustValue("http", "GwEntrance", "api")
 	r.Any("/"+gwEntrance+"/*action", entrance)
 	debugPrint("gateway entrance %s", gwEntrance)
-
-	//管理后台入口
-	conEntrance := Cfg.MustValue("http", "ConEntrance", "")
-	if conEntrance != "" {
-		r.StaticFS("/"+conEntrance, http.Dir("./goadmin"))
-	}
 
 	// 1.json
 	// r.GET("/someJSON", func(c *gin.Context) {

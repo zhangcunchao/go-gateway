@@ -1,4 +1,4 @@
-module github.com/zhangcunchao/go-gateway
+module go-gateway
 
 go 1.16
 
