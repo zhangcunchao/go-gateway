@@ -13,16 +13,10 @@
     <div id="appvue" class="login-container">
         <form class="login-form">
             <div class="input-group">
-                <input type="text" id="username" v-model="loginInfo.username" class="input-field">
-                <label for="username" class="input-label">
-                    <span class="label-title">用户名</span>
-                </label>
+                <input type="text" id="username" clearable placeholder="用户名" v-model="loginInfo.username" class="input-field">
             </div>
             <div class="input-group">
-                <input type="password" v-model="loginInfo.password" id="password" class="input-field">
-                <label for="password" class="input-label">
-                    <span class="label-title">密码</span>
-                </label>
+                <input type="password" v-model="loginInfo.password" clearable placeholder="密码" id="password" class="input-field">
             </div>
             <button type="button" @click="login()" class="login-button">登录<i class="ai ai-enter"></i></button>
         </form>
