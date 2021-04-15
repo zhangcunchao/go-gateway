@@ -3,12 +3,11 @@ package main
 import (
 	"go-gateway/inc"
 	"go-gateway/routers"
+
+	_ "go-gateway/dao"
 )
 
 func main() {
-
-	//主动初始化
-	inc.Init()
 	//初始化路由
 	r := routers.InitRouter()
 

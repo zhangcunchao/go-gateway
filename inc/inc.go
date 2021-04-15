@@ -15,11 +15,11 @@ var (
 )
 
 //主动初始化
-func Init() {
+func init() {
 
 	defer func() {
 		if r := recover(); r != nil {
-			debug.DebugPrint("捕获到错误：%s\n", r)
+			debug.DebugPrint("捕获到inc层错误：%s", r)
 			os.Exit(2)
 		}
 	}()
