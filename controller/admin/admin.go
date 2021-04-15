@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"go-gateway/inc"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,11 +11,12 @@ const COOD_SUCCESS = 10000
 const COOD_FAIL = 10001
 const COOD_NOT_LOGIN = 10002
 
-const COOKIE_TIMEOUT = 60
+const COOKIE_TIMEOUT = 6000
 
 func AuthMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if cookie, err := c.Request.Cookie("session_id"); err == nil {
+		//判断登录
+		if cookie, err := c.Request.Cookie("adminauth"); err == nil {
 			value := cookie.Value
 			if value == "onion" {
 				c.Next()
@@ -25,6 +27,7 @@ func AuthMiddleWare() gin.HandlerFunc {
 		// 	c.Next()
 		// 	return
 		// }
+		//判断用户状态权限
 		Return(COOD_NOT_LOGIN, "请先登录", "", c)
 		c.Abort()
 	}
@@ -38,12 +41,12 @@ func UserInfo(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-
 	loginInfo := make(map[string]interface{}) //注意该结构接受的内容
 	c.BindJSON(&loginInfo)
-	//debug.DebugPrint("uuuu", loginInfo)
-	c.SetCookie("session_id", "onion", COOKIE_TIMEOUT, "/",
-		"", false, false)
+
+	conEntrance := inc.Cfg.MustValue("http", "ConEntrance", "")
+	//按path设置cookie
+	c.SetCookie("adminauth", "onion", COOKIE_TIMEOUT, "/"+conEntrance, "", false, false)
 
 	Return(COOD_SUCCESS, "调用成功", "", c)
 }

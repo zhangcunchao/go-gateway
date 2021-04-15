@@ -5,8 +5,8 @@ import (
 
 	"go-gateway/controller/admin"
 	"go-gateway/debug"
+	"go-gateway/inc"
 
-	"github.com/Unknwon/goconfig"
 	"github.com/gin-gonic/gin"
 )
 
@@ -43,23 +43,32 @@ func entrance(c *gin.Context) {
 	c.String(http.StatusOK, "hello World! %s", name)
 }
 
-func InitRouter(Cfg *goconfig.ConfigFile) *gin.Engine {
+func abc(c *gin.Context) {
+	name := c.FullPath()
+	c.String(http.StatusOK, "hello World! %s", name)
+}
+
+func InitRouter() *gin.Engine {
 	r := gin.New()
 
-	gwEntrance := Cfg.MustValue("http", "GwEntrance", "api")
+	gwEntrance := inc.Cfg.MustValue("http", "GwEntrance", "api")
 	r.Any("/"+gwEntrance+"/*action", entrance)
+
+	test := "/abcd/:id"
+
+	r.Any(test, abc)
+
 	debug.DebugPrint("gateway entrance %s", gwEntrance)
 	//管理后台入口
-	conEntrance := Cfg.MustValue("http", "ConEntrance", "")
+	conEntrance := inc.Cfg.MustValue("http", "ConEntrance", "")
 	if conEntrance != "" {
 		r.StaticFS("/"+conEntrance, http.Dir("./page"))
 
 		r.POST("/"+conEntrance+"/login", admin.Login)
-		r.Use(admin.AuthMiddleWare())
-		{
-			//userInfo
-			r.POST("/"+conEntrance+"/userinfo", admin.UserInfo)
-		}
+
+		av1 := r.Group(conEntrance).Use(admin.AuthMiddleWare())
+		av1.POST("userinfo", admin.UserInfo)
+
 	}
 
 	return r

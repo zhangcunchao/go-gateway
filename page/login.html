@@ -18,15 +18,16 @@
             <div class="input-group">
                 <input type="password" v-model="loginInfo.password" clearable placeholder="密码" id="password" class="input-field">
             </div>
-            <button type="button" @click="login()" class="login-button">登录<i class="ai ai-enter"></i></button>
+            <button type="button" @click="login()" @keyup.enter="login()" class="login-button">登录<i class="ai ai-enter"></i></button>
         </form>
     </div>
 </body>
-<script src="assets/layui.js"></script>
-<script src="index.js" data-main="login"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="assets/layui.js"></script>
+<script src="index.js" data-main="login"></script>
+
 <script>
     var app = new Vue({
         el: '#appvue',
@@ -39,6 +40,7 @@
         mounted:function(){
         },
         created:function(){
+            this.keyupEnter()
         },
         methods: {
             login:function () {
@@ -57,6 +59,15 @@
                     console.log(res)
                 });
             },
+            keyupEnter:function(){
+            document.onkeydown = e =>{
+                //13表示回车键，baseURI是当前页面的地址，为了更严谨，也可以加别的，可以打印e看一下
+                if (e.keyCode === 13) {
+                //回车后执行搜索方法
+                    this.login()
+                }
+            }
+        }
             
         }
     })

@@ -24,8 +24,7 @@
                 <li class="layui-nav-item">
                     <a href="javascript:;">{{ userName }}</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="login.html">退出</a></dd>
-                        <dd><a href="login.html">退出</a></dd>
+                        <dd><a @click="loginOut()" href="javascript:;">退出</a></dd>
                     </dl>
                 </li>
             </ul>
@@ -36,7 +35,7 @@
 
                 <div class="custom-logo">
                     <img src="assets/images/logo.png" alt=""/>
-                    <h1>Admin Pro</h1>
+                    <h1>Go GATEWAY</h1>
                 </div>
                 <ul id="Nav" class="layui-nav layui-nav-tree">
                     <li class="layui-nav-item">
@@ -88,28 +87,33 @@
         </div>
 
         <div class="layui-footer">
-            <p>© 2018 DEMO</p>
+            <p>© 2021 DEMO</p>
         </div>
 
         <div class="mobile-mask"></div>
     </div>
-    <script src="assets/layui.js"></script>
-    <script src="index.js" data-main="home"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="assets/layui.js"></script>
+    <script src="index.js" data-main="home"></script>
 
     <script>
         var app = new Vue({
             el: '#appvue',
             data: {
-                userName : ""
+                userName : "",
+                cookieName:"adminauth"
             },
             mounted:function(){
                 this.userInfo();
             },
             created:function(){
+                //定时器，定时检测登录
+                this.timer = setInterval(this.checkCookie, 3000);
             },
+
             methods: {
                 userInfo:function () {
                     axios.post('userinfo', {id:1})
@@ -130,6 +134,32 @@
                     }).catch((res)=>{
                         console.log(res)
                     });
+                },
+                loginOut:function(){
+                    this.clearCookie(this.cookieName);
+                    window.setTimeout("window.location='login.html'",100);
+                },
+                checkCookie: function () {
+                    var adminauth = this.getCookie(this.cookieName);
+                    if (adminauth == "" || undefined == adminauth) {
+                        window.location.href="login.html"
+                    } 
+                },
+                //获取cookie
+                getCookie: function (key) {
+                    var arr1=document.cookie.split("; ");
+                    for(var i=0;i<arr1.length;i++){
+                        var arr2=arr1[i].split("=");
+                        if(arr2[0]==key){
+                            return decodeURI(arr2[1]);
+                        }
+                    }
+                },
+                //清除cookie
+                clearCookie: function (name) {
+                    var exp = new Date();
+                    exp.setTime(exp.getTime() + (-1 * 24 * 60 * 60 * 1000));
+                    document.cookie = name + "=; expires=" + exp.toGMTString();
                 },
                 
             }
