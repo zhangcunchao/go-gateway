@@ -1,4 +1,4 @@
-package dao
+package model
 
 import (
 	"go-gateway/debug"
@@ -13,15 +13,11 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-var Db gorm.DB
+var Db *gorm.DB
 
+//基础model
 type Model struct {
-	Id uint `gorm:"primaryKey"`
-}
-
-type Admin struct {
-	Model
-	Name string
+	Id uint `gorm:"primaryKey" json:"id"`
 }
 
 func init() {
@@ -44,8 +40,9 @@ func init() {
 			Colorful:      false,       // 禁用彩色打印
 		},
 	)
+	var err error
 
-	db, err := gorm.Open(mysql.Open(_dsn), &gorm.Config{
+	Db, err = gorm.Open(mysql.Open(_dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   dConf["TablePrefix"] + "_", // 表名前缀，`Article` 的表名应该是 `gg_articles`
 			SingularTable: true,                       // 使用单数表名，启用该选项，此时，`Article` 的表名应该是 `gg_article`
@@ -57,45 +54,15 @@ func init() {
 		panic(err)
 	}
 
-	sqlDb, err := db.DB()
+	sqlDb, err := Db.DB()
 
 	if err != nil {
 		panic(err)
 	}
-	Db = *db
 	//连接池设置
 	// SetMaxIdleConns 设置空闲连接池中连接的最大数量
 	sqlDb.SetMaxIdleConns(inc.Cfg.MustInt("db", "MaxIdleConns", 10))
 
 	// SetMaxOpenConns 设置打开数据库连接的最大数量。
 	sqlDb.SetMaxOpenConns(inc.Cfg.MustInt("db", "MaxOpenConns", 100))
-
-	go test()
-	// go test()
-	// go test()
-	// go test()
-	// go test()
-	// go test()
-	// go test()
-	// go test()
-	// go test()
-	// go test()
-}
-func test() {
-	// var admin Admin
-	// for {
-	// 	err := Db.Where("id = ?", 1).First(&admin).Error
-	// 	debug.DebugPrint("sssssssss", err)
-
-	// 	// result := map[string]interface{}{}
-	// 	// Db.Where("id = ?", 2).Model(&Admin{}).First(&result)
-	// 	// debug.DebugPrint("sssssssss", result)
-
-	// 	time.Sleep(1 * time.Second)
-	// }
-
-}
-
-func First() {
-
 }

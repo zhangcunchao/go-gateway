@@ -2,6 +2,7 @@ package admin
 
 import (
 	"go-gateway/inc"
+	"go-gateway/model"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,9 +36,9 @@ func AuthMiddleWare() gin.HandlerFunc {
 
 func UserInfo(c *gin.Context) {
 
-	data := map[string]string{"userName": "fuck", "id": "123"}
+	admin, _ := model.GetFirstAdmin()
 
-	Return(COOD_SUCCESS, "调用成功", data, c)
+	Return(COOD_SUCCESS, "调用成功", admin, c)
 }
 
 func Login(c *gin.Context) {

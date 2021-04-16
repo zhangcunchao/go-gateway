@@ -3,8 +3,6 @@ package main
 import (
 	"go-gateway/inc"
 	"go-gateway/routers"
-
-	_ "go-gateway/dao"
 )
 
 func main() {
@@ -14,4 +12,5 @@ func main() {
 	// 监听端口，默认在8080
 	port := inc.Cfg.MustValue("http", "port", "8080")
 	r.Run(":" + port)
+
 }

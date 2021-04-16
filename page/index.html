@@ -120,7 +120,7 @@
                     .then((response)=>{
                         if (response.data.code == 10000) {
                             console.log(response.data);
-                            this.userName = response.data.data.userName;
+                            this.userName = response.data.data.name;
                         } else {
                             this.$message({
                                 showClose: true,
