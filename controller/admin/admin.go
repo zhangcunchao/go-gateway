@@ -1,16 +1,13 @@
 package admin
 
 import (
+	"go-gateway/exception"
 	"go-gateway/inc"
 	"go-gateway/model"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
-
-const COOD_SUCCESS = 10000
-const COOD_FAIL = 10001
-const COOD_NOT_LOGIN = 10002
 
 const COOKIE_TIMEOUT = 6000
 
@@ -29,33 +26,42 @@ func AuthMiddleWare() gin.HandlerFunc {
 		// 	return
 		// }
 		//判断用户状态权限
-		Return(COOD_NOT_LOGIN, "请先登录", "", c)
+		Return(exception.COOD_NOT_LOGIN, "请先登录", "", c)
 		c.Abort()
 	}
 }
 
 func UserInfo(c *gin.Context) {
 
-	admin, _ := model.GetFirstAdmin()
+	admin, _ := model.GetFirstAdmin("id = ? and status = ?", 1, 1)
 
-	Return(COOD_SUCCESS, "调用成功", admin, c)
+	Return(exception.COOD_SUCCESS, "调用成功", admin, c)
 }
 
 func Login(c *gin.Context) {
-	loginInfo := make(map[string]interface{}) //注意该结构接受的内容
-	c.BindJSON(&loginInfo)
+	var loginInfo model.AdminLoginInfo
+	if err := c.ShouldBind(&loginInfo); err != nil {
+		Return(exception.COOD_FAIL, "请输入用户名、密码", nil, c)
+		//Return(exception.COOD_FAIL, err.Error(), nil, c)
+		return
+	}
+
+	if _, err := model.DoLogin(loginInfo); err != nil {
+		Return(exception.COOD_FAIL, err.Error(), nil, c)
+		return
+	}
 
 	conEntrance := inc.Cfg.MustValue("http", "ConEntrance", "")
 	//按path设置cookie
 	c.SetCookie("adminauth", "onion", COOKIE_TIMEOUT, "/"+conEntrance, "", false, false)
+	Return(exception.COOD_SUCCESS, "调用成功", nil, c)
 
-	Return(COOD_SUCCESS, "调用成功", "", c)
 }
 
-func Return(code int, msg string, data interface{}, c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  msg,
-		"data": data,
+func Return(code int, msg interface{}, data interface{}, c *gin.Context) {
+	c.JSON(http.StatusOK, exception.APIException{
+		Code: code,
+		Msg:  msg,
+		Data: data,
 	})
 }

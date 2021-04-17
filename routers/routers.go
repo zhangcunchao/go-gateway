@@ -53,7 +53,11 @@ func InitRouter() *gin.Engine {
 
 	r := gin.New()
 
-	r.Use(logerMiddleware())
+	//gin运行模式
+	DebugModel := inc.Cfg.MustValue("http", "DebugModel", "debug")
+	gin.SetMode(DebugModel)
+
+	r.Use(logerMiddleware(), Recover)
 
 	gwEntrance := inc.Cfg.MustValue("http", "GwEntrance", "api")
 	r.Any("/"+gwEntrance+"/*action", entrance)
@@ -70,8 +74,32 @@ func InitRouter() *gin.Engine {
 		av1.POST("userinfo", admin.UserInfo)
 
 	}
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 10004,
+			"msg":  "404 NotFound",
+			"data": nil,
+		})
+	})
 
 	return r
+}
+
+func Recover(c *gin.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+
+			c.JSON(http.StatusOK, gin.H{
+				"code": 10005,
+				"msg":  r,
+				"data": nil,
+			})
+			//终止后续接口调用，不加的话recover到异常后，还会继续执行接口里后续代码
+			c.Abort()
+		}
+	}()
+	//加载完 defer recover，继续后续接口调用
+	c.Next()
 }
 
 func logerMiddleware() gin.HandlerFunc {

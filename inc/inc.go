@@ -1,6 +1,8 @@
 package inc
 
 import (
+	"crypto/md5"
+	"fmt"
 	"os"
 	"runtime"
 
@@ -31,6 +33,9 @@ func init() {
 		panic("conf.ini不存在")
 	}
 
+}
+
+func InitGatway() {
 	//多核配置
 	numCPU := Cfg.MustInt("http", "numCPU", 0)
 	if numCPU == 0 {
@@ -38,8 +43,17 @@ func init() {
 	}
 	runtime.GOMAXPROCS(numCPU)
 	debug.DebugPrint("run cpuNum %d", numCPU)
-
 	//gin运行模式
 	DebugModel := Cfg.MustValue("http", "DebugModel", "debug")
 	gin.SetMode(DebugModel)
+}
+
+func MD5(s string) string {
+	hash := md5.New()
+	_, err := hash.Write([]byte(s))
+	if err != nil {
+		panic(err)
+	}
+	sum := hash.Sum(nil)
+	return fmt.Sprintf("%x\n", sum)
 }
