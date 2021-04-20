@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="../assets/css/layui.css">
     <link rel="stylesheet" href="../assets/css/view.css"/>
-    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <title>管理后台</title>
 </head>
 <body class="layui-view-body">
-    <div class="layui-content">
+    <div id="appvue" class="layui-content">
         <div class="layui-page-header">
             <div class="pagewrap">
                 <span class="layui-breadcrumb">
@@ -47,126 +47,77 @@
                             </div>
                         </div>
                         <button class="layui-btn layui-btn-blue"><i class="layui-icon">&#xe654;</i>新增</button>
-                        <table id="demo"></table>
+                        <table id="demo">
+
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="../assets/layui.all.js"></script>
     <script>
       var element = layui.element;
   var table = layui.table;
   var form = layui.form;
+
+  var app = new Vue({
+            el: '#appvue',
+            data: {
+            },
+            mounted:function(){
+                this.searchUser();
+            },
+            created:function(){
+                
+            },
+
+            methods: {
+              searchUser:function () {
+                  axios.post('../userList', {})
+                    .then((response)=>{
+                        if (response.data.code == 10000) {
+                            console.log(response.data);
+                            tmpData= response.data.data;
+                        } else {
+                            this.$message({
+                                showClose: true,
+                                message: response.data.msg,
+                                type: 'error',
+                                duration:5000});
+                        }
+
+                        //展示已知数据
+                      table.render({
+                        elem: '#demo'
+                        ,cols: [[ //标题栏
+                          {field: 'ID', title: 'ID', width: 80, sort: true}
+                          ,{field: 'name', title: '用户名'}
+                          ,{field: 'email', title: '邮箱'}
+                          ,{field: 'CreatedAt', title: '创建时间', sort: true}
+                        ]]
+                        ,data: response.data.data
+                        ,skin: 'line' //表格风格
+                        ,even: true
+                        ,page: true //是否显示分页
+                        ,limits: [5, 7, 10]
+                        ,limit: 5 //每页默认显示的数量
+                      });
+
+                    }).catch((res)=>{
+                        console.log(res)
+                    });
+                    
+                },
+                
+                
+            }
+        })
   
-  //展示已知数据
-  table.render({
-    elem: '#demo'
-    ,cols: [[ //标题栏
-      {field: 'id', title: 'ID', width: 80, sort: true}
-      ,{field: 'username', title: '用户名', width: 120}
-      ,{field: 'email', title: '邮箱', minWidth: 150}
-      ,{field: 'sign', title: '签名', minWidth: 160}
-      ,{field: 'sex', title: '性别', width: 80}
-      ,{field: 'city', title: '城市', width: 100}
-      ,{field: 'experience', title: '积分', width: 80, sort: true}
-    ]]
-    ,data: [{
-      "id": "10001"
-      ,"username": "杜甫"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "116"
-      ,"ip": "192.168.0.8"
-      ,"logins": "108"
-      ,"joinTime": "2016-10-14"
-    }, {
-      "id": "10002"
-      ,"username": "李白"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "12"
-      ,"ip": "192.168.0.8"
-      ,"logins": "106"
-      ,"joinTime": "2016-10-14"
-      ,"LAY_CHECKED": true
-    }, {
-      "id": "10003"
-      ,"username": "王勃"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "65"
-      ,"ip": "192.168.0.8"
-      ,"logins": "106"
-      ,"joinTime": "2016-10-14"
-    }, {
-      "id": "10004"
-      ,"username": "贤心"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "666"
-      ,"ip": "192.168.0.8"
-      ,"logins": "106"
-      ,"joinTime": "2016-10-14"
-    }, {
-      "id": "10005"
-      ,"username": "贤心"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "86"
-      ,"ip": "192.168.0.8"
-      ,"logins": "106"
-      ,"joinTime": "2016-10-14"
-    }, {
-      "id": "10006"
-      ,"username": "贤心"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "12"
-      ,"ip": "192.168.0.8"
-      ,"logins": "106"
-      ,"joinTime": "2016-10-14"
-    }, {
-      "id": "10007"
-      ,"username": "贤心"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "16"
-      ,"ip": "192.168.0.8"
-      ,"logins": "106"
-      ,"joinTime": "2016-10-14"
-    }, {
-      "id": "10008"
-      ,"username": "贤心"
-      ,"email": "xianxin@layui.com"
-      ,"sex": "男"
-      ,"city": "浙江杭州"
-      ,"sign": "人生恰似一场修行"
-      ,"experience": "106"
-      ,"ip": "192.168.0.8"
-      ,"logins": "106"
-      ,"joinTime": "2016-10-14"
-    }]
-    ,skin: 'line' //表格风格
-    ,even: true
-    ,page: true //是否显示分页
-    ,limits: [5, 7, 10]
-    ,limit: 5 //每页默认显示的数量
-  });
+  
     </script>
 </body>
 </html>

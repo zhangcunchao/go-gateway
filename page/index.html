@@ -116,7 +116,7 @@
 
             methods: {
                 userInfo:function () {
-                    axios.post('userinfo', {id:1})
+                    axios.post('userInfo', {})
                     .then((response)=>{
                         if (response.data.code == 10000) {
                             console.log(response.data);

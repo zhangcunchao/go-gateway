@@ -8,6 +8,7 @@ import (
 	"go-gateway/inc"
 	"go-gateway/model"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,10 @@ func AuthMiddleWare() gin.HandlerFunc {
 		//判断登录
 		if cookie, err := c.Request.Cookie("adminauth"); err == nil {
 			value := cookie.Value
+			value, _ = url.PathUnescape(value)
+			//value = strings.Replace(value, "%3D", "=", -1)
 			e, err := base64.URLEncoding.DecodeString(value)
+			//debug.DebugPrint("sub", err)
 			if err == nil {
 				//解密
 				res := inc.DesDecrypt_CBC(e)
@@ -37,8 +41,8 @@ func AuthMiddleWare() gin.HandlerFunc {
 					//cookie 有效期校验
 					now := time.Now()
 					time := now.Sub(UserLoginInfo.LoginDate)
+					debug.DebugPrint("sub", time)
 					if time > COOKIE_TIMEOUT {
-						debug.DebugPrint("sub", time)
 						//账户状态等校验
 						admin, row := model.GetFirstAdmin("id = ?", UserLoginInfo.Id)
 						if row > 0 {
@@ -57,6 +61,7 @@ func AuthMiddleWare() gin.HandlerFunc {
 				}
 			}
 		}
+
 		// if url := c.Request.URL.String(); url == "/login" {
 		// 	c.Next()
 		// 	return
@@ -67,9 +72,18 @@ func AuthMiddleWare() gin.HandlerFunc {
 	}
 }
 
+//登录账户信息
 func UserInfo(c *gin.Context) {
 
 	Return(exception.COOD_SUCCESS, "调用成功", UserLoginInfo, c)
+}
+
+//管理员列表
+func UserList(c *gin.Context) {
+
+	adminList, _ := model.GetListAdmin("1 = ?", 1)
+
+	Return(exception.COOD_SUCCESS, "调用成功", adminList, c)
 }
 
 func Login(c *gin.Context) {
@@ -95,11 +109,12 @@ func Login(c *gin.Context) {
 	//debug.DebugPrint("adminauth1", string(b))
 	result := inc.DesEncrypt_CBC(b)
 
-	f := base64.URLEncoding.EncodeToString(result)
+	f := base64.URLEncoding.EncodeToString([]byte(result))
 	//f := base64.StdEncoding.EncodeToString(result)
 
 	conEntrance := inc.Cfg.MustValue("http", "ConEntrance", "")
 	//按path设置cookie
+	debug.DebugPrint("cookie", f)
 	c.SetCookie("adminauth", f, COOKIE_TIMEOUT, "/"+conEntrance, "", false, false)
 	Return(exception.COOD_SUCCESS, "调用成功", nil, c)
 

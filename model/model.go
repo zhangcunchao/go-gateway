@@ -65,3 +65,10 @@ func GetFirst(a interface{}, query interface{}, args ...interface{}) (row int64)
 	row = res.RowsAffected
 	return
 }
+
+func GetList(a interface{}, query interface{}, args ...interface{}) (row int64) {
+
+	res := Db.Debug().Where(query, args...).Find(a)
+	row = res.RowsAffected
+	return
+}

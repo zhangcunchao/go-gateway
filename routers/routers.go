@@ -68,7 +68,10 @@ func InitRouter() *gin.Engine {
 		r.POST("/"+conEntrance+"/login", admin.Login)
 
 		av1 := r.Group(conEntrance).Use(admin.AuthMiddleWare())
-		av1.POST("userinfo", admin.UserInfo)
+		//登录用户信息
+		av1.POST("userInfo", admin.UserInfo)
+		//管理账户列表
+		av1.POST("userList", admin.UserList)
 
 	}
 	r.NoRoute(func(c *gin.Context) {

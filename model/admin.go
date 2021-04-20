@@ -22,8 +22,15 @@ type AdminLoginInfo struct {
 	Pwd  string `json:"pwd" form:"pwd" binding:"required"`
 }
 
+//查询单条
 func GetFirstAdmin(query interface{}, args ...interface{}) (admin Admin, row int64) {
 	row = GetFirst(&admin, query, args...)
+	return
+}
+
+//多条
+func GetListAdmin(query interface{}, args ...interface{}) (admin []Admin, row int64) {
+	row = GetList(&admin, query, args...)
 	return
 }
 
