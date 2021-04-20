@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/base64"
 	"encoding/json"
+	"go-gateway/debug"
 	"go-gateway/exception"
 	"go-gateway/inc"
 	"go-gateway/model"
@@ -12,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const COOKIE_TIMEOUT = 6000
+const COOKIE_TIMEOUT = 86400 * 1
 
 type adminAuth struct {
 	Id        uint      `json:"id"`
@@ -33,18 +34,26 @@ func AuthMiddleWare() gin.HandlerFunc {
 				res := inc.DesDecrypt_CBC(e)
 				err := json.Unmarshal(res, &UserLoginInfo)
 				if err == nil && UserLoginInfo.Id > 0 {
-					admin, row := model.GetFirstAdmin("id = ?", UserLoginInfo.Id)
-					if row > 0 {
-						if admin.Status == 1 {
-							c.Next()
-							return
-						} else {
-							Return(exception.COOD_FAIL_10003, "账户被禁用", "", c)
-							c.Abort()
-							return
-						}
+					//cookie 有效期校验
+					now := time.Now()
+					time := now.Sub(UserLoginInfo.LoginDate)
+					if time > COOKIE_TIMEOUT {
+						debug.DebugPrint("sub", time)
+						//账户状态等校验
+						admin, row := model.GetFirstAdmin("id = ?", UserLoginInfo.Id)
+						if row > 0 {
+							if admin.Status == 1 {
+								c.Next()
+								return
+							} else {
+								Return(exception.COOD_FAIL_10003, "账户被禁用", "", c)
+								c.Abort()
+								return
+							}
 
+						}
 					}
+
 				}
 			}
 		}
