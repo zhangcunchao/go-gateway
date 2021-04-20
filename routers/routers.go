@@ -8,6 +8,7 @@ import (
 
 	"go-gateway/controller/admin"
 	"go-gateway/debug"
+	"go-gateway/exception"
 	"go-gateway/inc"
 
 	"github.com/gin-gonic/gin"
@@ -53,10 +54,6 @@ func InitRouter() *gin.Engine {
 
 	r := gin.New()
 
-	//gin运行模式
-	DebugModel := inc.Cfg.MustValue("http", "DebugModel", "debug")
-	gin.SetMode(DebugModel)
-
 	r.Use(logerMiddleware(), Recover)
 
 	gwEntrance := inc.Cfg.MustValue("http", "GwEntrance", "api")
@@ -76,7 +73,7 @@ func InitRouter() *gin.Engine {
 	}
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 10004,
+			"code": exception.COOD_FAIL_10004,
 			"msg":  "404 NotFound",
 			"data": nil,
 		})
@@ -90,7 +87,7 @@ func Recover(c *gin.Context) {
 		if r := recover(); r != nil {
 
 			c.JSON(http.StatusOK, gin.H{
-				"code": 10005,
+				"code": exception.COOD_FAIL_10005,
 				"msg":  r,
 				"data": nil,
 			})

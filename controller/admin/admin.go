@@ -1,24 +1,51 @@
 package admin
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"go-gateway/exception"
 	"go-gateway/inc"
 	"go-gateway/model"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 const COOKIE_TIMEOUT = 6000
 
+type adminAuth struct {
+	Id        uint      `json:"id"`
+	Name      string    `json:"name"`
+	LoginDate time.Time `json:"login_date"`
+}
+
+var UserLoginInfo adminAuth
+
 func AuthMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//判断登录
 		if cookie, err := c.Request.Cookie("adminauth"); err == nil {
 			value := cookie.Value
-			if value == "onion" {
-				c.Next()
-				return
+			e, err := base64.URLEncoding.DecodeString(value)
+			if err == nil {
+				//解密
+				res := inc.DesDecrypt_CBC(e)
+				err := json.Unmarshal(res, &UserLoginInfo)
+				if err == nil && UserLoginInfo.Id > 0 {
+					admin, row := model.GetFirstAdmin("id = ?", UserLoginInfo.Id)
+					if row > 0 {
+						if admin.Status == 1 {
+							c.Next()
+							return
+						} else {
+							Return(exception.COOD_FAIL_10003, "账户被禁用", "", c)
+							c.Abort()
+							return
+						}
+
+					}
+				}
 			}
 		}
 		// if url := c.Request.URL.String(); url == "/login" {
@@ -33,9 +60,7 @@ func AuthMiddleWare() gin.HandlerFunc {
 
 func UserInfo(c *gin.Context) {
 
-	admin, _ := model.GetFirstAdmin("id = ? and status = ?", 1, 1)
-
-	Return(exception.COOD_SUCCESS, "调用成功", admin, c)
+	Return(exception.COOD_SUCCESS, "调用成功", UserLoginInfo, c)
 }
 
 func Login(c *gin.Context) {
@@ -46,14 +71,27 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if _, err := model.DoLogin(loginInfo); err != nil {
+	var admin model.Admin
+	var err error
+	if admin, err = model.DoLogin(loginInfo); err != nil {
 		Return(exception.COOD_FAIL, err.Error(), nil, c)
 		return
 	}
 
+	auth := adminAuth{Id: admin.ID, Name: admin.Name, LoginDate: time.Now()}
+	b, err := json.Marshal(auth)
+	if err != nil {
+		panic(err)
+	}
+	//debug.DebugPrint("adminauth1", string(b))
+	result := inc.DesEncrypt_CBC(b)
+
+	f := base64.URLEncoding.EncodeToString(result)
+	//f := base64.StdEncoding.EncodeToString(result)
+
 	conEntrance := inc.Cfg.MustValue("http", "ConEntrance", "")
 	//按path设置cookie
-	c.SetCookie("adminauth", "onion", COOKIE_TIMEOUT, "/"+conEntrance, "", false, false)
+	c.SetCookie("adminauth", f, COOKIE_TIMEOUT, "/"+conEntrance, "", false, false)
 	Return(exception.COOD_SUCCESS, "调用成功", nil, c)
 
 }

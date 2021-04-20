@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+//orm 表结构
 type Admin struct {
 	gorm.Model
 	Name   string `json:"name" gorm:"type:varchar(100);not null;default:'';comment:用户名"`
@@ -15,6 +16,7 @@ type Admin struct {
 	Status int    `json:"status" gorm:"type:tinyint(2);not null;default:1;comment:状态: 1 正常,2 禁用"`
 }
 
+//登陆信息结构
 type AdminLoginInfo struct {
 	Name string `json:"name" form:"name" binding:"required"`
 	Pwd  string `json:"pwd" form:"pwd" binding:"required"`
