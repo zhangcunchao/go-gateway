@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="../assets/css/layui.css">
     <link rel="stylesheet" href="../assets/css/view.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/index.css">
     <title>管理后台</title>
 </head>
 <body class="layui-view-body">
@@ -55,14 +55,16 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="../assets/vue2.6.12.js"></script>
+    <script src="../assets/axios.min.js"></script>
+    <script src="../assets/eleui.js"></script>
     <script src="../assets/layui.all.js"></script>
     <script>
       var element = layui.element;
   var table = layui.table;
   var form = layui.form;
+
+  console.log(333333333,layui)
 
   var app = new Vue({
             el: '#appvue',
@@ -108,7 +110,7 @@
                       });
 
                     }).catch((res)=>{
-                        console.log(res)
+                        console.log(2123333333,res)
                     });
                     
                 },
