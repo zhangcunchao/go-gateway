@@ -1,7 +1,7 @@
 # go-gateway
 > api网关服务
 
-todo
+### todo
 
 - 分布式
 - 控制台分离
@@ -25,3 +25,17 @@ todo
 - 请求日志(access log)：仅记录转发的基本内容，自定义记录字段与排序顺序，定期自动清理日- 志。
 - 运行日志(system log)：提供控制台和节点的运行日志，默认仅记录ERROR等级的信息，可将等级- 按实际情况调成INFO、WARN或DEBUG。
 - Open API：提供 API 对网关进行操作，便于集成。
+
+### 目录结构
+
+### 安装步骤
+
+配置conf.ini
+
+执行：
+
+
+
+    ；初始化数据库 其他系统请源码编译
+    linux:
+    ./pkg/gg_linux_amd64 init
